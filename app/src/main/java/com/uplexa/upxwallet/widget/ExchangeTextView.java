@@ -65,8 +65,7 @@ public class ExchangeTextView extends LinearLayout
             return false;
         }
         boolean ok = true;
-        /* Make sure to uncomment this when we get on CMC */
-        /*
+/*
         if (xmrAmount != null) {
             try {
                 double amount = Double.parseDouble(xmrAmount);
@@ -84,7 +83,7 @@ public class ExchangeTextView extends LinearLayout
         } else {
             ok = false;
         }*/
-        /* Make sure to uncomment this when we get on CMC */
+
         if (!ok) {
             shakeAmountField();
         }
@@ -345,7 +344,7 @@ public class ExchangeTextView extends LinearLayout
                 setXmr(null);
                 notXmrAmount = cleanAmount;
             } else { // no XMR currency - cannot happen!
-                Timber.e("No XMR currency!");
+                Timber.e("No UPX currency!");
                 setXmr(null);
                 notXmrAmount = null;
                 return false;

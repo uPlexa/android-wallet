@@ -39,6 +39,7 @@ static jclass class_WalletListener;
 static jclass class_TransactionInfo;
 static jclass class_Transfer;
 static jclass class_Ledger;
+static jclass class_WalletStatus;
 
 std::mutex _listenerMutex;
 
@@ -61,6 +62,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
             jenv->FindClass("com/uplexa/upxwallet/model/WalletListener")));
     class_Ledger = static_cast<jclass>(jenv->NewGlobalRef(
             jenv->FindClass("com/uplexa/upxwallet/ledger/Ledger")));
+    class_WalletStatus = static_cast<jclass>(jenv->NewGlobalRef(
+            jenv->FindClass("com/uplexa/upxwallet/model/Wallet$Status")));
     return JNI_VERSION_1_6;
 }
 #ifdef __cplusplus
@@ -218,7 +221,7 @@ std::vector<std::string> java2cpp(JNIEnv *env, jobject arrayList) {
     for (jint i = 0; i < len; i++) {
         jstring element = static_cast<jstring>(env->CallObjectMethod(arrayList,
                                                                      java_util_ArrayList_get, i));
-        const char *pchars = env->GetStringUTFChars(element, NULL);
+        const char *pchars = env->GetStringUTFChars(element, nullptr);
         result.emplace_back(pchars);
         env->ReleaseStringUTFChars(element, pchars);
         env->DeleteLocalRef(element);
@@ -226,14 +229,15 @@ std::vector<std::string> java2cpp(JNIEnv *env, jobject arrayList) {
     return result;
 }
 
-jobject cpp2java(JNIEnv *env, std::vector<std::string> vector) {
+jobject cpp2java(JNIEnv *env, const std::vector<std::string>& vector) {
 
     jmethodID java_util_ArrayList_ = env->GetMethodID(class_ArrayList, "<init>", "(I)V");
     jmethodID java_util_ArrayList_add = env->GetMethodID(class_ArrayList, "add",
                                                          "(Ljava/lang/Object;)Z");
+                                                         jobject result = env->NewObject(class_ArrayList, java_util_ArrayList_,
+                                                                                         static_cast<jint> (vector.size()));
 
-    jobject result = env->NewObject(class_ArrayList, java_util_ArrayList_, vector.size());
-    for (std::string &s: vector) {
+                                                         for (const std::string &s: vector) {
         jstring element = env->NewStringUTF(s.c_str());
         env->CallBooleanMethod(result, java_util_ArrayList_add, element);
         env->DeleteLocalRef(element);
@@ -257,9 +261,9 @@ Java_com_uplexa_upxwallet_model_WalletManager_createWalletJ(JNIEnv *env, jobject
                                                             jstring path, jstring password,
                                                             jstring language,
                                                             jint networkType) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
-    const char *_password = env->GetStringUTFChars(password, NULL);
-    const char *_language = env->GetStringUTFChars(language, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
+    const char *_language = env->GetStringUTFChars(language, nullptr);
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
 
     Bitmonero::Wallet *wallet =
@@ -279,8 +283,8 @@ JNIEXPORT jlong JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_openWalletJ(JNIEnv *env, jobject instance,
                                                           jstring path, jstring password,
                                                           jint networkType) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
-    const char *_password = env->GetStringUTFChars(password, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
 
     Bitmonero::Wallet *wallet =
@@ -300,9 +304,9 @@ Java_com_uplexa_upxwallet_model_WalletManager_recoveryWalletJ(JNIEnv *env, jobje
                                                               jstring mnemonic,
                                                               jint networkType,
                                                               jlong restoreHeight) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
-    const char *_password = env->GetStringUTFChars(password, NULL);
-    const char *_mnemonic = env->GetStringUTFChars(mnemonic, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
+    const char *_mnemonic = env->GetStringUTFChars(mnemonic, nullptr);
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
 
     Bitmonero::Wallet *wallet =
@@ -328,13 +332,13 @@ Java_com_uplexa_upxwallet_model_WalletManager_createWalletFromKeysJ(JNIEnv *env,
                                                                     jstring addressString,
                                                                     jstring viewKeyString,
                                                                     jstring spendKeyString) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
-    const char *_password = env->GetStringUTFChars(password, NULL);
-    const char *_language = env->GetStringUTFChars(language, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
+    const char *_language = env->GetStringUTFChars(language, nullptr);
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
-    const char *_addressString = env->GetStringUTFChars(addressString, NULL);
-    const char *_viewKeyString = env->GetStringUTFChars(viewKeyString, NULL);
-    const char *_spendKeyString = env->GetStringUTFChars(spendKeyString, NULL);
+    const char *_addressString = env->GetStringUTFChars(addressString, nullptr);
+    const char *_viewKeyString = env->GetStringUTFChars(viewKeyString, nullptr);
+    const char *_spendKeyString = env->GetStringUTFChars(spendKeyString, nullptr);
 
     Bitmonero::Wallet *wallet =
             Bitmonero::WalletManagerFactory::getWalletManager()->createWalletFromKeys(
@@ -367,11 +371,11 @@ Java_com_uplexa_upxwallet_model_WalletManager_createWalletFromDeviceJ(JNIEnv *en
                                                                       jstring deviceName,
                                                                       jlong restoreHeight,
                                                                       jstring subaddressLookahead) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
-    const char *_password = env->GetStringUTFChars(password, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
-    const char *_deviceName = env->GetStringUTFChars(deviceName, NULL);
-    const char *_subaddressLookahead = env->GetStringUTFChars(subaddressLookahead, NULL);
+    const char *_deviceName = env->GetStringUTFChars(deviceName, nullptr);
+    const char *_subaddressLookahead = env->GetStringUTFChars(subaddressLookahead, nullptr);
 
     Bitmonero::Wallet *wallet =
             Bitmonero::WalletManagerFactory::getWalletManager()->createWalletFromDevice(
@@ -392,7 +396,7 @@ Java_com_uplexa_upxwallet_model_WalletManager_createWalletFromDeviceJ(JNIEnv *en
 JNIEXPORT jboolean JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_walletExists(JNIEnv *env, jobject instance,
                                                            jstring path) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
     bool exists =
             Bitmonero::WalletManagerFactory::getWalletManager()->walletExists(std::string(_path));
     env->ReleaseStringUTFChars(path, _path);
@@ -404,8 +408,8 @@ Java_com_uplexa_upxwallet_model_WalletManager_verifyWalletPassword(JNIEnv *env, 
                                                                    jstring keys_file_name,
                                                                    jstring password,
                                                                    jboolean watch_only) {
-    const char *_keys_file_name = env->GetStringUTFChars(keys_file_name, NULL);
-    const char *_password = env->GetStringUTFChars(password, NULL);
+    const char *_keys_file_name = env->GetStringUTFChars(keys_file_name, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
     bool passwordOk =
             Bitmonero::WalletManagerFactory::getWalletManager()->verifyWalletPassword(
                     std::string(_keys_file_name), std::string(_password), watch_only);
@@ -419,8 +423,8 @@ JNIEXPORT jint JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_queryWalletDeviceJ(JNIEnv *env, jobject instance,
                                                                  jstring keys_file_name,
                                                                  jstring password) {
-    const char *_keys_file_name = env->GetStringUTFChars(keys_file_name, NULL);
-    const char *_password = env->GetStringUTFChars(password, NULL);
+    const char *_keys_file_name = env->GetStringUTFChars(keys_file_name, nullptr);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
     Bitmonero::Wallet::Device device_type;
     bool ok = Bitmonero::WalletManagerFactory::getWalletManager()->
             queryWalletDevice(device_type, std::string(_keys_file_name), std::string(_password));
@@ -435,25 +439,20 @@ Java_com_uplexa_upxwallet_model_WalletManager_queryWalletDeviceJ(JNIEnv *env, jo
 JNIEXPORT jobject JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_findWallets(JNIEnv *env, jobject instance,
                                                           jstring path) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
     std::vector<std::string> walletPaths =
             Bitmonero::WalletManagerFactory::getWalletManager()->findWallets(std::string(_path));
     env->ReleaseStringUTFChars(path, _path);
     return cpp2java(env, walletPaths);
 }
 
-JNIEXPORT jstring JNICALL
-Java_com_uplexa_upxwallet_model_WalletManager_getErrorString(JNIEnv *env, jobject instance) {
-    Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
-    return env->NewStringUTF(wallet->errorString().c_str());
-}
 
 //TODO virtual bool checkPayment(const std::string &address, const std::string &txid, const std::string &txkey, const std::string &daemon_address, uint64_t &received, uint64_t &height, std::string &error) const = 0;
 
 JNIEXPORT void JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_setDaemonAddressJ(JNIEnv *env, jobject instance,
                                                                 jstring address) {
-    const char *_address = env->GetStringUTFChars(address, NULL);
+    const char *_address = env->GetStringUTFChars(address, nullptr);
     Bitmonero::WalletManagerFactory::getWalletManager()->setDaemonAddress(std::string(_address));
     env->ReleaseStringUTFChars(address, _address);
 }
@@ -505,7 +504,7 @@ Java_com_uplexa_upxwallet_model_WalletManager_startMining(JNIEnv *env, jobject i
                                                           jstring address,
                                                           jboolean background_mining,
                                                           jboolean ignore_battery) {
-    const char *_address = env->GetStringUTFChars(address, NULL);
+    const char *_address = env->GetStringUTFChars(address, nullptr);
     bool success =
             Bitmonero::WalletManagerFactory::getWalletManager()->startMining(std::string(_address),
                                                                              background_mining,
@@ -523,7 +522,7 @@ JNIEXPORT jstring JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_resolveOpenAlias(JNIEnv *env, jobject instance,
                                                                jstring address,
                                                                jboolean dnssec_valid) {
-    const char *_address = env->GetStringUTFChars(address, NULL);
+    const char *_address = env->GetStringUTFChars(address, nullptr);
     bool _dnssec_valid = (bool) dnssec_valid;
     std::string resolvedAlias =
             Bitmonero::WalletManagerFactory::getWalletManager()->resolveOpenAlias(
@@ -575,7 +574,7 @@ Java_com_uplexa_upxwallet_model_Wallet_getSeedLanguage(JNIEnv *env, jobject inst
 JNIEXPORT void JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_setSeedLanguage(JNIEnv *env, jobject instance,
                                                        jstring language) {
-    const char *_language = env->GetStringUTFChars(language, NULL);
+    const char *_language = env->GetStringUTFChars(language, nullptr);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     wallet->setSeedLanguage(std::string(_language));
     env->ReleaseStringUTFChars(language, _language);
@@ -587,16 +586,31 @@ Java_com_uplexa_upxwallet_model_Wallet_getStatusJ(JNIEnv *env, jobject instance)
     return wallet->status();
 }
 
-JNIEXPORT jstring JNICALL
-Java_com_uplexa_upxwallet_model_Wallet_getErrorString(JNIEnv *env, jobject instance) {
+
+jobject newWalletStatusInstance(JNIEnv *env, int status, const std::string &errorString) {
+    jmethodID init = env->GetMethodID(class_WalletStatus, "<init>",
+                                      "(ILjava/lang/String;)V");
+    jstring _errorString = env->NewStringUTF(errorString.c_str());
+    jobject instance = env->NewObject(class_WalletStatus, init, status, _errorString);
+    env->DeleteLocalRef(_errorString);
+    return instance;
+}
+
+
+JNIEXPORT jobject JNICALL
+Java_com_uplexa_upxwallet_model_Wallet_statusWithErrorString(JNIEnv *env, jobject instance) {
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
-    return env->NewStringUTF(wallet->errorString().c_str());
+    int status;
+    std::string errorString;
+    wallet->statusWithErrorString(status, errorString);
+
+    return newWalletStatusInstance(env, status, errorString);
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_setPassword(JNIEnv *env, jobject instance,
                                                    jstring password) {
-    const char *_password = env->GetStringUTFChars(password, NULL);
+    const char *_password = env->GetStringUTFChars(password, nullptr);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     bool success = wallet->setPassword(std::string(_password));
     env->ReleaseStringUTFChars(password, _password);
@@ -630,7 +644,7 @@ Java_com_uplexa_upxwallet_model_Wallet_nettype(JNIEnv *env, jobject instance) {
 JNIEXPORT jstring JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_getIntegratedAddress(JNIEnv *env, jobject instance,
                                                             jstring payment_id) {
-    const char *_payment_id = env->GetStringUTFChars(payment_id, NULL);
+    const char *_payment_id = env->GetStringUTFChars(payment_id, nullptr);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     std::string address = wallet->integratedAddress(_payment_id);
     env->ReleaseStringUTFChars(payment_id, _payment_id);
@@ -652,7 +666,7 @@ Java_com_uplexa_upxwallet_model_Wallet_getSecretSpendKey(JNIEnv *env, jobject in
 JNIEXPORT jboolean JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_store(JNIEnv *env, jobject instance,
                                              jstring path) {
-    const char *_path = env->GetStringUTFChars(path, NULL);
+    const char *_path = env->GetStringUTFChars(path, nullptr);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     bool success = wallet->store(std::string(_path));
     if (!success) {
@@ -675,9 +689,9 @@ Java_com_uplexa_upxwallet_model_Wallet_initJ(JNIEnv *env, jobject instance,
                                              jstring daemon_address,
                                              jlong upper_transaction_size_limit,
                                              jstring daemon_username, jstring daemon_password) {
-    const char *_daemon_address = env->GetStringUTFChars(daemon_address, NULL);
-    const char *_daemon_username = env->GetStringUTFChars(daemon_username, NULL);
-    const char *_daemon_password = env->GetStringUTFChars(daemon_password, NULL);
+    const char *_daemon_address = env->GetStringUTFChars(daemon_address, nullptr);
+    const char *_daemon_username = env->GetStringUTFChars(daemon_username, nullptr);
+    const char *_daemon_password = env->GetStringUTFChars(daemon_password, nullptr);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     bool status = wallet->init(_daemon_address, (uint64_t) upper_transaction_size_limit,
                                _daemon_username,
@@ -795,7 +809,7 @@ Java_com_uplexa_upxwallet_util_KeyStoreHelper_slowHash(JNIEnv *env, jclass clazz
         return nullptr;
     }
 
-    jbyte *buffer = env->GetByteArrayElements(data, NULL);
+    jbyte *buffer = env->GetByteArrayElements(data, nullptr);
     switch (brokenVariant) {
         case 1:
             slow_hash_broken(buffer, hash, 1);
@@ -821,7 +835,7 @@ Java_com_uplexa_upxwallet_model_Wallet_getDisplayAmount(JNIEnv *env, jclass claz
 JNIEXPORT jlong JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_getAmountFromString(JNIEnv *env, jclass clazz,
                                                            jstring amount) {
-    const char *_amount = env->GetStringUTFChars(amount, NULL);
+    const char *_amount = env->GetStringUTFChars(amount, nullptr);
     uint64_t x = Bitmonero::Wallet::amountFromString(_amount);
     env->ReleaseStringUTFChars(amount, _amount);
     return x;
@@ -841,7 +855,7 @@ Java_com_uplexa_upxwallet_model_Wallet_generatePaymentId(JNIEnv *env, jclass cla
 JNIEXPORT jboolean JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_isPaymentIdValid(JNIEnv *env, jclass clazz,
                                                         jstring payment_id) {
-    const char *_payment_id = env->GetStringUTFChars(payment_id, NULL);
+    const char *_payment_id = env->GetStringUTFChars(payment_id, nullptr);
     bool isValid = Bitmonero::Wallet::paymentIdValid(_payment_id);
     env->ReleaseStringUTFChars(payment_id, _payment_id);
     return static_cast<jboolean>(isValid);
@@ -850,7 +864,7 @@ Java_com_uplexa_upxwallet_model_Wallet_isPaymentIdValid(JNIEnv *env, jclass claz
 JNIEXPORT jboolean JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_isAddressValid(JNIEnv *env, jclass clazz,
                                                       jstring address, jint networkType) {
-    const char *_address = env->GetStringUTFChars(address, NULL);
+    const char *_address = env->GetStringUTFChars(address, nullptr);
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
     bool isValid = Bitmonero::Wallet::addressValid(_address, _networkType);
     env->ReleaseStringUTFChars(address, _address);
@@ -862,7 +876,7 @@ Java_com_uplexa_upxwallet_model_Wallet_getPaymentIdFromAddress(JNIEnv *env, jcla
                                                                jstring address,
                                                                jint networkType) {
     Monero::NetworkType _networkType = static_cast<Monero::NetworkType>(networkType);
-    const char *_address = env->GetStringUTFChars(address, NULL);
+    const char *_address = env->GetStringUTFChars(address, nullptr);
     std::string payment_id = Bitmonero::Wallet::paymentIdFromAddress(_address, _networkType);
     env->ReleaseStringUTFChars(address, _address);
     return env->NewStringUTF(payment_id.c_str());
@@ -907,8 +921,8 @@ Java_com_uplexa_upxwallet_model_Wallet_createTransactionJ(JNIEnv *env, jobject i
                                                           jint priority,
                                                           jint accountIndex) {
 
-    const char *_dst_addr = env->GetStringUTFChars(dst_addr, NULL);
-    const char *_payment_id = env->GetStringUTFChars(payment_id, NULL);
+    const char *_dst_addr = env->GetStringUTFChars(dst_addr, nullptr);
+    const char *_payment_id = env->GetStringUTFChars(payment_id, nullptr);
     Bitmonero::PendingTransaction::Priority _priority =
             static_cast<Bitmonero::PendingTransaction::Priority>(priority);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
@@ -930,8 +944,8 @@ Java_com_uplexa_upxwallet_model_Wallet_createSweepTransaction(JNIEnv *env, jobje
                                                               jint priority,
                                                               jint accountIndex) {
 
-    const char *_dst_addr = env->GetStringUTFChars(dst_addr, NULL);
-    const char *_payment_id = env->GetStringUTFChars(payment_id, NULL);
+    const char *_dst_addr = env->GetStringUTFChars(dst_addr, nullptr);
+    const char *_payment_id = env->GetStringUTFChars(payment_id, nullptr);
     Bitmonero::PendingTransaction::Priority _priority =
             static_cast<Bitmonero::PendingTransaction::Priority>(priority);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
@@ -1019,8 +1033,8 @@ JNIEXPORT jboolean JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_setUserNote(JNIEnv *env, jobject instance,
                                                    jstring txid, jstring note) {
 
-    const char *_txid = env->GetStringUTFChars(txid, NULL);
-    const char *_note = env->GetStringUTFChars(note, NULL);
+    const char *_txid = env->GetStringUTFChars(txid, nullptr);
+    const char *_note = env->GetStringUTFChars(note, nullptr);
 
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
 
@@ -1036,7 +1050,7 @@ JNIEXPORT jstring JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_getUserNote(JNIEnv *env, jobject instance,
                                                    jstring txid) {
 
-    const char *_txid = env->GetStringUTFChars(txid, NULL);
+    const char *_txid = env->GetStringUTFChars(txid, nullptr);
 
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
 
@@ -1050,7 +1064,7 @@ JNIEXPORT jstring JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_getTxKey(JNIEnv *env, jobject instance,
                                                 jstring txid) {
 
-    const char *_txid = env->GetStringUTFChars(txid, NULL);
+    const char *_txid = env->GetStringUTFChars(txid, nullptr);
 
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
 
@@ -1065,7 +1079,7 @@ JNIEXPORT void JNICALL
 Java_com_uplexa_upxwallet_model_Wallet_addAccount(JNIEnv *env, jobject instance,
                                                   jstring label) {
 
-    const char *_label = env->GetStringUTFChars(label, NULL);
+    const char *_label = env->GetStringUTFChars(label, nullptr);
 
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     wallet->addSubaddressAccount(_label);
@@ -1092,7 +1106,7 @@ Java_com_uplexa_upxwallet_model_Wallet_setSubaddressLabel(JNIEnv *env, jobject i
                                                           jint accountIndex, jint addressIndex,
                                                           jstring label) {
 
-    const char *_label = env->GetStringUTFChars(label, NULL);
+    const char *_label = env->GetStringUTFChars(label, nullptr);
 
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     wallet->setSubaddressLabel(accountIndex, addressIndex, _label);
@@ -1121,7 +1135,7 @@ Java_com_uplexa_upxwallet_model_Wallet_addSubaddress(JNIEnv *env, jobject instan
                                                      jint accountIndex,
                                                      jstring label) {
 
-    const char *_label = env->GetStringUTFChars(label, NULL);
+    const char *_label = env->GetStringUTFChars(label, nullptr);
     Bitmonero::Wallet *wallet = getHandle<Bitmonero::Wallet>(env, instance);
     wallet->addSubaddress(accountIndex, _label);
     env->ReleaseStringUTFChars(label, _label);
@@ -1259,7 +1273,7 @@ JNIEXPORT jboolean JNICALL
 Java_com_uplexa_upxwallet_model_PendingTransaction_commit(JNIEnv *env, jobject instance,
                                                           jstring filename, jboolean overwrite) {
 
-    const char *_filename = env->GetStringUTFChars(filename, NULL);
+    const char *_filename = env->GetStringUTFChars(filename, nullptr);
 
     Bitmonero::PendingTransaction *tx = getHandle<Bitmonero::PendingTransaction>(env, instance);
     bool success = tx->commit(_filename, overwrite);
@@ -1317,8 +1331,8 @@ Java_com_uplexa_upxwallet_model_WalletManager_initLogger(JNIEnv *env, jclass cla
                                                          jstring argv0,
                                                          jstring default_log_base_name) {
 
-    const char *_argv0 = env->GetStringUTFChars(argv0, NULL);
-    const char *_default_log_base_name = env->GetStringUTFChars(default_log_base_name, NULL);
+    const char *_argv0 = env->GetStringUTFChars(argv0, nullptr);
+    const char *_default_log_base_name = env->GetStringUTFChars(default_log_base_name, nullptr);
 
     Bitmonero::Wallet::init(_argv0, _default_log_base_name);
 
@@ -1330,8 +1344,8 @@ JNIEXPORT void JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_logDebug(JNIEnv *env, jclass clazz,
                                                        jstring category, jstring message) {
 
-    const char *_category = env->GetStringUTFChars(category, NULL);
-    const char *_message = env->GetStringUTFChars(message, NULL);
+    const char *_category = env->GetStringUTFChars(category, nullptr);
+    const char *_message = env->GetStringUTFChars(message, nullptr);
 
     Bitmonero::Wallet::debug(_category, _message);
 
@@ -1343,8 +1357,8 @@ JNIEXPORT void JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_logInfo(JNIEnv *env, jclass clazz,
                                                       jstring category, jstring message) {
 
-    const char *_category = env->GetStringUTFChars(category, NULL);
-    const char *_message = env->GetStringUTFChars(message, NULL);
+    const char *_category = env->GetStringUTFChars(category, nullptr);
+    const char *_message = env->GetStringUTFChars(message, nullptr);
 
     Bitmonero::Wallet::info(_category, _message);
 
@@ -1356,8 +1370,8 @@ JNIEXPORT void JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_logWarning(JNIEnv *env, jclass clazz,
                                                          jstring category, jstring message) {
 
-    const char *_category = env->GetStringUTFChars(category, NULL);
-    const char *_message = env->GetStringUTFChars(message, NULL);
+    const char *_category = env->GetStringUTFChars(category, nullptr);
+    const char *_message = env->GetStringUTFChars(message, nullptr);
 
     Bitmonero::Wallet::warning(_category, _message);
 
@@ -1369,8 +1383,8 @@ JNIEXPORT void JNICALL
 Java_com_uplexa_upxwallet_model_WalletManager_logError(JNIEnv *env, jclass clazz,
                                                        jstring category, jstring message) {
 
-    const char *_category = env->GetStringUTFChars(category, NULL);
-    const char *_message = env->GetStringUTFChars(message, NULL);
+    const char *_category = env->GetStringUTFChars(category, nullptr);
+    const char *_message = env->GetStringUTFChars(message, nullptr);
 
     Bitmonero::Wallet::error(_category, _message);
 
@@ -1423,7 +1437,7 @@ int LedgerExchange(
         return -1;
     }
     jsize len = jenv->GetArrayLength(dataRecv);
-    LOGD("LedgerExchange SCARD_S_SUCCESS %ld/%d", cmd_len, len);
+    LOGD("LedgerExchange SCARD_S_SUCCESS %u/%d", cmd_len, len);
     if (len <= max_resp_len) {
         jenv->GetByteArrayRegion(dataRecv, 0, len, (jbyte *) response);
         jenv->DeleteLocalRef(dataRecv);
@@ -1456,7 +1470,7 @@ int LedgerFind(char *buffer, size_t len) {
 
     int ret;
     if (name != nullptr) {
-        const char *_name = jenv->GetStringUTFChars(name, NULL);
+        const char *_name = jenv->GetStringUTFChars(name, nullptr);
         strncpy(buffer, _name, len);
         jenv->ReleaseStringUTFChars(name, _name);
         buffer[len - 1] = 0; // terminate in case _name is bigger

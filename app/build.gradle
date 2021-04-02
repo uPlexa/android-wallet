@@ -1,12 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    //compileSdkVersion 29
+    //buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "com.uplexa.upxwallet"
         minSdkVersion 21
-        targetSdkVersion 28
+        //targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 5
         versionName "0.0.5 'Før Stormen'"
 
@@ -69,6 +72,7 @@ android {
 
     // Enumerate translated locales
     def availableLocales = ["en"]
+    ndkVersion '21.4.7075529'
     new File("app/src/main/res/").eachFileMatch(~/^values-.*/) { file ->
         def languageTag = file.name.substring(7).replace("-r", "-")
         availableLocales.add(languageTag)
@@ -117,6 +121,6 @@ dependencies {
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
     testImplementation "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
     testImplementation "com.squareup.okhttp3:mockwebserver:$rootProject.ext.okHttpVersion"
-    testImplementation 'org.json:json:20140107'
-    testImplementation 'net.jodah:concurrentunit:0.4.2'
+    testImplementation 'org.json:json:20180813'
+    testImplementation 'net.jodah:concurrentunit:0.4.4'
 }

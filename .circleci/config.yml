@@ -3,7 +3,8 @@ jobs:
   build:
     working_directory: ~/code
     docker:
-      - image: bitriseio/android-ndk
+      - image: circleci/android:api-28-ndk
+      #- image: bitriseio/android-ndk
     environment:
       JVM_OPTS: -Xmx3200m
     steps:

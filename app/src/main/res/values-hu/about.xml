@@ -30,10 +30,10 @@
         titkosított formában kerülnek továbbításra a uPlexahálózatába.
         </p>
         <p>Más személyes adatot nem gyűjt az applikáció.</p>
-        <p>Az átváltási funkció (opcionális) használata esetén a uPlexa a coinmarketcap.com
+        <p>Az átváltási funkció (opcionális) használata esetén a uPlexa a coingecko.com
         nyilvános API-ján keresztül kéri le az árfolyamot.
         A kéréseid során történő adatgyűjtés módjával kapcsolatban tekintsd meg az adatvédelmi
-        irányelveiket a https://coinmarketcap.com/privacy weboldalon.</p>
+        irányelveiket a https://coingecko.com/privacy weboldalon.</p>
         <p>Ha BTC-címekre való fizetésre használod az applikációt, akkor az UPX.TO szolgáltatását
         használod. Részletes adatvédelmi irányelveiket a https://xmr.to/ weboldalon tekintheted meg.
         A uPlexa számukra a kedvezményezett BTC-címet és a küldeni kívánt mennyiséget közli meg,

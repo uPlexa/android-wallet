@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 m2049r et al.
+ * Copyright (c) 2017-2019 m2049r et al.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.uplexa.upxwallet.service.exchange.coinmarketcap;
+package com.uplexa.upxwallet.service.exchange.coingecko;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
+import com.uplexa.upxwallet.model.Wallet;
 import com.uplexa.upxwallet.service.exchange.api.ExchangeApi;
 import com.uplexa.upxwallet.service.exchange.api.ExchangeCallback;
 import com.uplexa.upxwallet.service.exchange.api.ExchangeException;
 import com.uplexa.upxwallet.service.exchange.api.ExchangeRate;
 import com.uplexa.upxwallet.util.Helper;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,9 +36,10 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import timber.log.Timber;
 
 public class ExchangeApiImpl implements ExchangeApi {
-    static final String CRYPTO_ID = "3752";
+    static final String UPX_CRYPTO_ID = "uplexa";
 
     @NonNull
     private final OkHttpClient okHttpClient;
@@ -47,15 +48,13 @@ public class ExchangeApiImpl implements ExchangeApi {
 
     //so we can inject the mockserver url
     @VisibleForTesting
-    ExchangeApiImpl(@NonNull final OkHttpClient okHttpClient, final HttpUrl baseUrl) {
-
+    public ExchangeApiImpl(@NonNull final OkHttpClient okHttpClient, final HttpUrl baseUrl) {
         this.okHttpClient = okHttpClient;
         this.baseUrl = baseUrl;
     }
 
     public ExchangeApiImpl(@NonNull final OkHttpClient okHttpClient) {
-        this(okHttpClient, HttpUrl.parse("https://api.coinmarketcap.com/v2/ticker/"));
-
+        this(okHttpClient, HttpUrl.parse("https://api.coingecko.com/api/v3/simple/price"));
     }
 
     @Override
@@ -67,29 +66,29 @@ public class ExchangeApiImpl implements ExchangeApi {
             return;
         }
 
-        boolean inverse = false;
-        String fiat = null;
+        boolean invertQuery;
 
-        if (baseCurrency.equals(Helper.CRYPTO)) {
-            fiat = quoteCurrency;
-            inverse = false;
-        }
-
-        if (quoteCurrency.equals(Helper.CRYPTO)) {
-            fiat = baseCurrency;
-            inverse = true;
-        }
-
-        if (fiat == null) {
-            callback.onError(new IllegalArgumentException("no fiat specified"));
+        if (Helper.BASE_CRYPTO.equals(baseCurrency)) {
+            invertQuery = false;
+        } else if (Helper.BASE_CRYPTO.equals(quoteCurrency)) {
+            invertQuery = true;
+        } else {
+            callback.onError(new IllegalArgumentException("no crypto specified"));
             return;
         }
 
-        final boolean swapAssets = inverse;
+        Timber.d("queryExchangeRate: i %b, b %s, q %s", invertQuery, baseCurrency, quoteCurrency);
+        final boolean invert = invertQuery;
+        String symbol = invert ? quoteCurrency : baseCurrency;
+        if (symbol.equals(Wallet.UPX_SYMBOL)) {
+            symbol = UPX_CRYPTO_ID;
+        }
+        final String base = symbol;
+        final String quote = invert ? baseCurrency : quoteCurrency;
 
         final HttpUrl url = baseUrl.newBuilder()
-                .addEncodedPathSegments(CRYPTO_ID + "/")
-                .addQueryParameter("convert", fiat)
+                .addQueryParameter("ids", base.toLowerCase())
+                .addQueryParameter("vs_currencies", quote.toLowerCase())
                 .build();
 
         final Request httpRequest = createHttpRequest(url);
@@ -105,14 +104,14 @@ public class ExchangeApiImpl implements ExchangeApi {
                 if (response.isSuccessful()) {
                     try {
                         final JSONObject json = new JSONObject(response.body().string());
-                        final JSONObject metadata = json.getJSONObject("metadata");
-                        if (!metadata.isNull("error")) {
-                            final String errorMsg = metadata.getString("error");
-                            callback.onError(new ExchangeException(response.code(), errorMsg));
-                        } else {
-                            final JSONObject jsonResult = json.getJSONObject("data");
-                            reportSuccess(jsonResult, swapAssets, callback);
+                        if (json.isNull(base)) {
+                            callback.onError(new ExchangeException(response.code(), "No price found"));
+                            return;
                         }
+
+                        final JSONObject price = json.getJSONObject(base);
+                        final double rate = price.getDouble(quote.toLowerCase());
+                        reportSuccess(baseCurrency, quoteCurrency, rate, invert, callback);
                     } catch (JSONException ex) {
                         callback.onError(new ExchangeException(ex.getLocalizedMessage()));
                     }
@@ -123,15 +122,9 @@ public class ExchangeApiImpl implements ExchangeApi {
         });
     }
 
-    void reportSuccess(JSONObject jsonObject, boolean swapAssets, ExchangeCallback callback) {
-        try {
-            final ExchangeRate exchangeRate = new ExchangeRateImpl(jsonObject, swapAssets);
-            callback.onSuccess(exchangeRate);
-        } catch (JSONException ex) {
-            callback.onError(new ExchangeException(ex.getLocalizedMessage()));
-        } catch (ExchangeException ex) {
-            callback.onError(ex);
-        }
+    void reportSuccess(@NonNull final String baseCurrency, @NonNull final String quoteCurrency, double rate, boolean inverse, ExchangeCallback callback) {
+        final ExchangeRate exchangeRate = new ExchangeRateImpl(baseCurrency, quoteCurrency, rate, inverse);
+        callback.onSuccess(exchangeRate);
     }
 
     private Request createHttpRequest(final HttpUrl url) {

@@ -299,7 +299,7 @@
 
     <string-array name="currency" translatable="false">
         <item>UPX</item>
-        <!--<item>EUR</item>
+        <item>EUR</item>
         <item>USD</item>
         <item>JPY</item>
         <item>GBP</item>
@@ -331,7 +331,7 @@
         <item>SGD</item>
         <item>THB</item>
         <item>TRY</item>
-        <item>TWD</item>-->
+        <item>TWD</item>
     </string-array>
 
     <string name="fab_create_new">Create new wallet</string>

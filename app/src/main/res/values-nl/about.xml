@@ -25,8 +25,8 @@
         <p>Monero-sleutels en openbare uPlexa-adressen worden lokaal verzameld en verwerkt door de app, om transacties in versleutelde vorm te kunnen verwerken en verzenden op het uPlexa-netwerk.
         </p>
         <p>Verder worden er geen persoonlijke gegevens verzameld door de app.</p>
-        <p>Als je de optionele wisselkoersfunctie gebruikt, haalt uPlexa de wisselkoers op via de openbare API van coinmarketcap.com.
-        Zie het privacybeleid op https://coinmarketcap.com/privacy voor meer informatie over hoe de gegevens in je aanvragen worden verzameld.</p>
+        <p>Als je de optionele wisselkoersfunctie gebruikt, haalt uPlexa de wisselkoers op via de openbare API van coingecko.com.
+        Zie het privacybeleid op https://coingecko.com/privacy voor meer informatie over hoe de gegevens in je aanvragen worden verzameld.</p>
         <p>Als je de app gebruikt om naar BTC-adressen te betalen, maak je gebruik van de service UPX.TO.
         Zie hun privacybeleid op https://xmr.to/ voor meer informatie. uPlexa verzendt het BTC-adres en -bedrag van de bestemming naar UPX.TO. Je IP-adres kan ook worden bewaard.</p>
         <h2>App-machtigingen</h2>

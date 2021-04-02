@@ -31,10 +31,10 @@
         </p>
         <p>その他の個人情報はアプリによって収集されません。</p>
         <p>もしあなたが（オプションで）交換機能を利用する場合は、
-        uPlexaは交換レートを coinmarketcap.com の公開APIを通じて取得します。
+        uPlexaは交換レートを coingecko.com の公開APIを通じて取得します。
         あなたのリクエストのデータがどのように収集されているのかの
-        詳細については、coinmarketcap.com のプライバシーポリシーを
-        https://coinmarketcap.com/privacy にて参照してください。</p>
+        詳細については、coingecko.com のプライバシーポリシーを
+        https://coingecko.com/privacy にて参照してください。</p>
         <p>もしあなたがこのアプリをビットコインアドレス宛に支払う場合、
         あなたは UPX.TO のサービスを使うことになります。
         https://xmr.to/ を参照して UPX.TO のプライバシーポリシーを

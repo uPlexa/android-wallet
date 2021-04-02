@@ -25,8 +25,8 @@
         <p>Le chiavi e gli indirizzi pubblici di uPlexavengono raccolti e processati dall\'app localmente con lo scopo di processare le transazioni e vengono trasmessi all\'interno della rete uPlexain modo cifrato.
         </p>
         <p>Altri dati personali non sono raccolti dall\'app.</p>
-        <p>Se usi la funzionalità (opzionale) del cambio, uPlexa recupera il tasso di cambio attraverso le API pubbliche di coinmarketcap.com.
-        Controlla la loro politica per la privacy (in lingua inglese) su https://coinmarketcap.com/privacy per conoscere i dettagli su come vengono raccolti i dati nelle tue richieste.</p>
+        <p>Se usi la funzionalità (opzionale) del cambio, uPlexa recupera il tasso di cambio attraverso le API pubbliche di coingecko.com.
+        Controlla la loro politica per la privacy (in lingua inglese) su https://coingecko.com/privacy per conoscere i dettagli su come vengono raccolti i dati nelle tue richieste.</p>
         <p>Se utilizzi l\'app per effettuare pagamenti ad indirizzi BTC, stai usando il servizio UPX.TO.
         Controlla la loro politica per la privacy (in lingua inglese) su https://xmr.to/ per conoscere i dettagli. uPlexa invia a loro l\'indirizzo di destinazione BTC e l\'ammontare della transazione. Anche il tuo IP potrebbe essere raccolto.</p>
         <h2>Permessi app</h2>

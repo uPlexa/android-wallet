@@ -45,6 +45,8 @@ public class RestoreHeight {
         blockheight.put("2018-11-01", 15000L);
         blockheight.put("2018-12-01", 54500L);
         blockheight.put("2019-01-01", 77000L);
+        blockheight.put("2020-01-01", 339800L);
+        blockheight.put("2021-01-01", 602900L);
         /*
         blockheight.put("2014-05-01", 18844L);
         blockheight.put("2014-06-01", 65406L);

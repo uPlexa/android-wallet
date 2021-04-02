@@ -150,7 +150,7 @@ public class ExchangeRateTest {
             throws TimeoutException {
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
-        exchangeApi.queryExchangeRate("XMR", "USD", new ExchangeCallback() {
+        exchangeApi.queryExchangeRate("UPX", "USD", new ExchangeCallback() {
             @Override
             public void onSuccess(final ExchangeRate exchangeRate) {
                 waiter.fail();
@@ -175,7 +175,7 @@ public class ExchangeRateTest {
                 createMockExchangeRateErrorResponse());
         mockWebServer.enqueue(jsonMockResponse);
 
-        exchangeApi.queryExchangeRate("XMR", "ABC", new ExchangeCallback() {
+        exchangeApi.queryExchangeRate("UPX", "ABC", new ExchangeCallback() {
             @Override
             public void onSuccess(final ExchangeRate exchangeRate) {
                 waiter.fail();

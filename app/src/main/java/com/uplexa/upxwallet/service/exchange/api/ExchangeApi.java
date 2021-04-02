@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 public interface ExchangeApi {
 
     /**
-     * Queries the exchnage rate
+     * Queries the exchange rate
      *
      * @param baseCurrency  base currency
      * @param quoteCurrency quote currency

@@ -294,8 +294,8 @@
     <string name="archive_alert_no">いいえ、結構です!</string>
 
     <string-array name="currency" translatable="false">
-        <item>XMR</item>
-        <!--<item>EUR</item>
+        <item>UPX</item>
+        <item>EUR</item>
         <item>USD</item>
         <item>JPY</item>
         <item>GBP</item>
@@ -327,7 +327,7 @@
         <item>SGD</item>
         <item>THB</item>
         <item>TRY</item>
-        <item>TWD</item> -->
+        <item>TWD</item>
     </string-array>
 
     <string name="fab_create_new">新しいウォレットの作成</string>

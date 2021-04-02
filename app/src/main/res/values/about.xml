@@ -31,8 +31,8 @@
         </p>
         <p>Other personal data is not collected by the app.</p>
         <p>If you use the exchange (optional) functionality, uPlexa Wallet may fetch the exchange
-        rate through the public API of coinmarketcap.com (if/when listed).
-        See their privacy policy at https://coinmarketcap.com/privacy for
+        rate through the public API of coingecko.com (if/when listed).
+        See their privacy policy at https://coingecko.com/privacy for
         details on how data in your requests is collected.</p>
         <h2>App Permissions</h2>
         <ul>

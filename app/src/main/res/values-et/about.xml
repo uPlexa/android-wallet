@@ -28,9 +28,9 @@
         tehingute töötlemiseks ja edastatakse uPlexavõrku krüptitud kujul.
         </p>
         <p>Rakendus ei kogu muid isikuandmeid.</p>
-        <p>Kui kasutate vahetusfunktsiooni, kasutab uPlexa selleks coinmarketcap.com\'i
+        <p>Kui kasutate vahetusfunktsiooni, kasutab uPlexa selleks coingecko.com\'i
         avaliku API funktsiooni. Vaadake nende privaatsuspoliitikat aadressil
-        https://coinmarketcap.com/privacy, et saada üksikasju, kuidas teie päringute kohta
+        https://coingecko.com/privacy, et saada üksikasju, kuidas teie päringute kohta
         andmeid kogutakse.</p>
         <p>Kui kasutate äppi BTC-aadressitele raha saatmiseks, siis kasutatakse selleks
         UPX.TO teenust. Lisateabe saamiseks vaadake nende privaatsuspoliitikat aadressil

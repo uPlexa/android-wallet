@@ -84,6 +84,7 @@ public class Helper {
     static public final String NOCRAZYPASS_FLAGFILE = ".nocrazypass";
 
     static public final String CRYPTO = "UPX";
+    static public final String BASE_CRYPTO = Wallet.UPX_SYMBOL;
 
     static private final String WALLET_DIR = "uPlexaAndroid" + FLAVOR_SUFFIX;
     static private final String HOME_DIR = "uplexa" + FLAVOR_SUFFIX;
@@ -606,7 +607,7 @@ public class Helper {
     }
 
     static public ExchangeApi getExchangeApi() {
-        return new com.uplexa.upxwallet.service.exchange.coinmarketcap.ExchangeApiImpl(OkHttpHelper.getOkHttpClient());
+        return new com.uplexa.upxwallet.service.exchange.coingecko.ExchangeApiImpl(OkHttpHelper.getOkHttpClient());
     }
 
     public interface Action {

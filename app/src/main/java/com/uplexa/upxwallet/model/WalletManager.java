@@ -91,14 +91,16 @@ public class WalletManager {
         managedWallet = null;
     }
 
-    public Wallet createWallet(File aFile, String password, String language) {
+    public Wallet createWallet(File aFile, String password, String language, long height) {
         long walletHandle = createWalletJ(aFile.getAbsolutePath(), password, language, getNetworkType().getValue());
         Wallet wallet = new Wallet(walletHandle);
         manageWallet(wallet);
-        if (wallet.getStatus() == Wallet.Status.Status_Ok) {
+        if (wallet.getStatus().isOk()) {
             // (Re-)Estimate restore height based on what we know
-            long oldHeight = wallet.getRestoreHeight();
-            wallet.setRestoreHeight(RestoreHeight.getInstance().getHeight(new Date()));
+            final long oldHeight = wallet.getRestoreHeight();
+            final long restoreHeight =
+                    (height > -1) ? height : RestoreHeight.getInstance().getHeight(new Date());
+            wallet.setRestoreHeight(restoreHeight);
             Timber.d("Changed Restore Height from %d to %d", oldHeight, wallet.getRestoreHeight());
             wallet.setPassword(password); // this rewrites the keys file (which contains the restore height)
         }
@@ -264,8 +266,6 @@ public class WalletManager {
         return wallets;
     }
 
-    public native String getErrorString();
-
 //TODO virtual bool checkPayment(const std::string &address, const std::string &txid, const std::string &txkey, const std::string &daemon_address, uint64_t &received, uint64_t &height, std::string &error) const = 0;
 
     private String daemonAddress = null;
@@ -287,7 +287,7 @@ public class WalletManager {
             this.daemonAddress = null;
             this.daemonUsername = "";
             this.daemonPassword = "";
-            setDaemonAddressJ("");
+            //setDaemonAddressJ("");
         }
     }
 

@@ -25,8 +25,8 @@
         <p>uPlexakľúče a verejné adresy sú zbierané a spracovávané aplikáciou lokálne na účely 
 		spracovania a prenosu transakcie v uPlexasieti.</p>
         <p>Iné osobné data nie sú zbierané a spracovávané.</p>
-        <p>Pokiaľ používaš (voliteľnú) funkciu zmenárne, uPlexa vyhľadá výmenný kurz cez verejné API portálu coinmarketcap.com.
-        Pre viac detailov pozri zásady ochrany osobných údajov na https://coinmarketcap.com/privacy kde je uvedené aké dáta zbierajú</p>
+        <p>Pokiaľ používaš (voliteľnú) funkciu zmenárne, uPlexa vyhľadá výmenný kurz cez verejné API portálu coingecko.com.
+        Pre viac detailov pozri zásady ochrany osobných údajov na https://coingecko.com/privacy kde je uvedené aké dáta zbierajú</p>
         <p>Pokiaľ používaš aplikáciu pre platby na BTC adresy, využívaš služby UPX.TO.
         Pre viac detailov pozri zásady ochrany osobných údajov na https://xmr.to/ . uPlexa im posiela cieľovú BTC
         addresu príjemcu a posielané množstvo. Tvoju IP bude tiež možné zaznamenať. </p>
